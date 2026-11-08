@@ -64,3 +64,4 @@ bun run start
    - Categorized bento cards covering Frontend, Build Systems, Design Systems, AI Automation, and Systems Programming (Rust/Bun).
 10. **Section 07 — Let's Connect**:
     - One-click copy email (`yathink3@gmail.com`), phone numbers (`+65 8439 4761`, `+91 8281 166822`), direct social links, and an interactive terminal message transmitter.
+

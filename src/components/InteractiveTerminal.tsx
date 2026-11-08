@@ -460,3 +460,4 @@ Highly accomplished Staff Engineer and Front-End Architect with over 6+ years of
     </section>
   )
 }
+
