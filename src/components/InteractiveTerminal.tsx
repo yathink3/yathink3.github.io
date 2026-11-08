@@ -12,7 +12,8 @@ export function InteractiveTerminal() {
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [copied, setCopied] = useState(false)
   const [themeMode, setThemeMode] = useState<'amber' | 'emerald' | 'cyan'>('amber')
-  const bottomRef = useRef<HTMLDivElement | null>(null)
+  const terminalBodyRef = useRef<HTMLDivElement | null>(null)
+  const isInitialMount = useRef(true)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   const initialOutputs: CommandOutput[] = [
@@ -294,7 +295,16 @@ EDUCATION:
   }
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
+    if (terminalBodyRef.current) {
+      terminalBodyRef.current.scrollTo({
+        top: terminalBodyRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
   }, [outputs])
 
   const copyPlainResume = () => {
@@ -413,7 +423,7 @@ Highly accomplished Staff Engineer and Front-End Architect with over 6+ years of
           </div>
 
           {/* Terminal Body */}
-          <div className="p-6 max-h-[540px] overflow-y-auto space-y-4">
+          <div ref={terminalBodyRef} className="p-6 max-h-[540px] overflow-y-auto space-y-4">
             <div className="text-xs text-neutral-500 pb-2 border-b border-white/5 flex items-center justify-between">
               <span>Antigravity Interactive ZSH [Version 5.9.0-yk-darwin]</span>
               <span>Type &apos;help&apos; for instruction list</span>
@@ -452,8 +462,6 @@ Highly accomplished Staff Engineer and Front-End Architect with over 6+ years of
                 <CornerDownLeft className="w-3.5 h-3.5" />
               </button>
             </form>
-
-            <div ref={bottomRef} />
           </div>
         </div>
       </div>

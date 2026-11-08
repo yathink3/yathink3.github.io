@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useEffect } from 'react'
 import { AmbientCanvas } from '~/components/AmbientCanvas'
 import { CustomCursor } from '~/components/CustomCursor'
 import { Navbar } from '~/components/Navbar'
@@ -18,6 +19,12 @@ export const Route = createFileRoute('/')({
 })
 
 function HomePage() {
+  useEffect(() => {
+    if (!window.location.hash) {
+      window.scrollTo(0, 0)
+    }
+  }, [])
+
   return (
     <div className="relative min-h-screen text-[#f2f0ea]">
       <CustomCursor />
