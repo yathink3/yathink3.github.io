@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Terminal as TerminalIcon, Sparkles, Copy, Check, CornerDownLeft, Trash2 } from 'lucide-react'
+import { createPortal } from 'react-dom'
+import { Terminal as TerminalIcon, Sparkles, Copy, Check, CornerDownLeft, Trash2, Maximize2, X } from 'lucide-react'
 
 type CommandOutput = {
   command: string
@@ -12,9 +13,41 @@ export function InteractiveTerminal() {
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [copied, setCopied] = useState(false)
   const [themeMode, setThemeMode] = useState<'amber' | 'emerald' | 'cyan'>('amber')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const terminalBodyRef = useRef<HTMLDivElement | null>(null)
+  const modalBodyRef = useRef<HTMLDivElement | null>(null)
   const isInitialMount = useRef(true)
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const modalInputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    setMounted(true)
+    const handleOpen = () => setIsModalOpen(true)
+    window.addEventListener('open-terminal-modal', handleOpen)
+    return () => window.removeEventListener('open-terminal-modal', handleOpen)
+  }, [])
+
+  useEffect(() => {
+    if (!isModalOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsModalOpen(false)
+      }
+    }
+    document.body.style.overflow = 'hidden'
+    document.body.classList.add('terminal-modal-active')
+    window.addEventListener('keydown', handleKeyDown)
+    const timer = setTimeout(() => {
+      modalInputRef.current?.focus()
+    }, 100)
+    return () => {
+      document.body.style.overflow = 'auto'
+      document.body.classList.remove('terminal-modal-active')
+      window.removeEventListener('keydown', handleKeyDown)
+      clearTimeout(timer)
+    }
+  }, [isModalOpen])
 
   const initialOutputs: CommandOutput[] = [
     {
@@ -306,6 +339,12 @@ EDUCATION:
         behavior: 'smooth',
       })
     }
+    if (modalBodyRef.current) {
+      modalBodyRef.current.scrollTo({
+        top: modalBodyRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
   }, [outputs])
 
   const copyPlainResume = () => {
@@ -328,144 +367,147 @@ Highly accomplished Staff Engineer and Front-End Architect with over 6+ years of
     cyan: 'text-[#38bdf8]',
   }
 
-  return (
-    <section id="terminal" className="py-24 sm:py-32 relative">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Label */}
-        <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-[#e6c79c] mb-6">
-          <span className="w-8 h-[1px] bg-[#e6c79c]" />
-          <span>05 — Interactive Terminal</span>
-        </div>
+  if (!mounted || !isModalOpen) return null
 
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-          <div>
-            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
-              Hardcore developer <em className="serif text-[#e6c79c] font-normal">CLI.</em>
-            </h2>
-            <p className="text-neutral-400 text-sm sm:text-base mt-2">
-              Execute live commands directly or click the quick pills below to explore career data.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={copyPlainResume}
-              className="flex items-center gap-1.5 font-mono text-xs text-neutral-300 bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg transition-all"
-            >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? 'Copied' : 'Copy Resume'}</span>
-            </button>
-            <button
-              onClick={() => setOutputs([])}
-              className="flex items-center gap-1 font-mono text-xs text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1.5 rounded-lg transition-all"
-              title="Clear terminal"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Quick Command Pills */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          <span className="font-mono text-xs text-neutral-500 self-center mr-1">Quick run:</span>
-          {quickCommands.map((cmd) => (
-            <button
-              key={cmd}
-              onClick={() => handleCommand(cmd)}
-              className="font-mono text-xs px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-neutral-300 hover:text-white hover:border-[#e6c79c]/60 hover:bg-white/[0.08] transition-all"
-            >
-              $ {cmd}
-            </button>
-          ))}
-        </div>
-
-        {/* Terminal Window */}
-        <div
-          className="rounded-3xl bg-[#090a0f] border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.9)] overflow-hidden font-mono"
-          onClick={() => inputRef.current?.focus()}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 py-3.5 bg-white/[0.03] border-b border-white/10 select-none">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-[#ff5f56]" />
-              <span className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
-              <span className="w-3 h-3 rounded-full bg-[#27c93f]" />
-            </div>
-
-            <div className="font-mono text-xs text-neutral-400 flex items-center gap-2">
-              <TerminalIcon className={`w-3.5 h-3.5 ${themeColors[themeMode]}`} />
-              <span>yathin@antigravity: ~/portfolio (zsh)</span>
-            </div>
-
-            {/* Phosphor Theme Switcher */}
-            <div className="flex items-center gap-1 text-[11px]">
-              <button
-                onClick={() => setThemeMode('amber')}
-                className={`w-3.5 h-3.5 rounded-full bg-[#e6c79c] transition-opacity ${
-                  themeMode === 'amber' ? 'ring-2 ring-white/50' : 'opacity-40 hover:opacity-80'
-                }`}
-                title="Amber theme"
-              />
-              <button
-                onClick={() => setThemeMode('emerald')}
-                className={`w-3.5 h-3.5 rounded-full bg-[#34d399] transition-opacity ${
-                  themeMode === 'emerald' ? 'ring-2 ring-white/50' : 'opacity-40 hover:opacity-80'
-                }`}
-                title="Green phosphor theme"
-              />
-              <button
-                onClick={() => setThemeMode('cyan')}
-                className={`w-3.5 h-3.5 rounded-full bg-[#38bdf8] transition-opacity ${
-                  themeMode === 'cyan' ? 'ring-2 ring-white/50' : 'opacity-40 hover:opacity-80'
-                }`}
-                title="Matrix cyan theme"
-              />
-            </div>
-          </div>
-
-          {/* Terminal Body */}
-          <div ref={terminalBodyRef} className="p-6 max-h-[540px] overflow-y-auto space-y-4">
-            <div className="text-xs text-neutral-500 pb-2 border-b border-white/5 flex items-center justify-between">
-              <span>Antigravity Interactive ZSH [Version 5.9.0-yk-darwin]</span>
-              <span>Type &apos;help&apos; for instruction list</span>
-            </div>
-
-            {/* Rendered Command Outputs */}
-            {outputs.map((item, index) => (
-              <div key={index} className="space-y-2">
-                <div className="flex items-center gap-2 text-xs">
-                  <span className={themeColors[themeMode]}>yathin@sg-prod:~$</span>
-                  <span className="text-white font-medium">{item.command}</span>
-                </div>
-                <div className="pl-4 border-l border-white/10">{item.output}</div>
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center pt-20 pb-4 px-3 sm:px-6 md:px-8 bg-black/75 backdrop-blur-md animate-in fade-in duration-200"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) setIsModalOpen(false)
+      }}
+    >
+          <div
+            className="w-full max-w-5xl h-[84vh] flex flex-col rounded-2xl sm:rounded-3xl bg-[#090a0f]/95 border border-white/20 shadow-[0_25px_100px_rgba(0,0,0,0.85)] backdrop-blur-xl overflow-hidden font-mono relative"
+            onClick={() => modalInputRef.current?.focus()}
+          >
+            {/* Modal Titlebar */}
+            <div className="flex items-center justify-between px-5 py-4 bg-white/[0.04] border-b border-white/10 select-none">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="w-3.5 h-3.5 rounded-full bg-[#ff5f56] hover:opacity-80 transition-opacity"
+                  title="Close (Esc)"
+                />
+                <button
+                  type="button"
+                  onClick={() => setOutputs([])}
+                  className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] hover:opacity-80 transition-opacity"
+                  title="Clear outputs"
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="w-3.5 h-3.5 rounded-full bg-[#27c93f] hover:opacity-80 transition-opacity"
+                  title="Close"
+                />
               </div>
-            ))}
 
-            {/* Live Input Prompt */}
-            <form onSubmit={handleSubmit} className="flex items-center gap-2 text-xs pt-2">
-              <span className={themeColors[themeMode]}>yathin@sg-prod:~$</span>
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="type a command... (e.g. whoami, achievements, exp)"
-                className="flex-1 bg-transparent border-none outline-none text-white font-mono text-xs focus:ring-0 placeholder:text-neutral-600"
-                autoComplete="off"
-                spellCheck="false"
-              />
-              <button
-                type="submit"
-                className="text-neutral-500 hover:text-white transition-colors"
-                title="Execute"
-              >
-                <CornerDownLeft className="w-3.5 h-3.5" />
-              </button>
-            </form>
+              <div className="font-mono text-xs text-neutral-300 flex items-center gap-2">
+                <TerminalIcon className={`w-3.5 h-3.5 ${themeColors[themeMode]}`} />
+                <span className="font-semibold text-white">yathin@antigravity: ~/portfolio (zsh)</span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {/* Phosphor Theme Switcher */}
+                <div className="flex items-center gap-1.5 text-[11px] pr-2 border-r border-white/10">
+                  <button
+                    onClick={() => setThemeMode('amber')}
+                    className={`w-3.5 h-3.5 rounded-full bg-[#e6c79c] transition-opacity ${
+                      themeMode === 'amber' ? 'ring-2 ring-white/50' : 'opacity-40 hover:opacity-80'
+                    }`}
+                    title="Amber theme"
+                  />
+                  <button
+                    onClick={() => setThemeMode('emerald')}
+                    className={`w-3.5 h-3.5 rounded-full bg-[#34d399] transition-opacity ${
+                      themeMode === 'emerald' ? 'ring-2 ring-white/50' : 'opacity-40 hover:opacity-80'
+                    }`}
+                    title="Green phosphor theme"
+                  />
+                  <button
+                    onClick={() => setThemeMode('cyan')}
+                    className={`w-3.5 h-3.5 rounded-full bg-[#38bdf8] transition-opacity ${
+                      themeMode === 'cyan' ? 'ring-2 ring-white/50' : 'opacity-40 hover:opacity-80'
+                    }`}
+                    title="Matrix cyan theme"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="flex items-center gap-1 font-mono text-xs text-neutral-400 hover:text-white px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                  title="Close (Esc)"
+                >
+                  <X className="w-4 h-4" />
+                  <span className="text-[11px] hidden sm:inline">ESC</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Quick Command Pills */}
+            <div className="px-5 py-2.5 bg-white/[0.02] border-b border-white/5 flex flex-wrap items-center gap-2 select-none">
+              <span className="text-[11px] text-neutral-500 mr-1">Quick run:</span>
+              {quickCommands.map((cmd) => (
+                <button
+                  key={cmd}
+                  type="button"
+                  onClick={() => handleCommand(cmd)}
+                  className="font-mono text-xs px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-neutral-300 hover:text-white hover:border-[#e6c79c]/60 hover:bg-white/[0.08] transition-all"
+                >
+                  $ {cmd}
+                </button>
+              ))}
+            </div>
+
+            {/* Modal Terminal Body */}
+            <div
+              ref={modalBodyRef}
+              className="flex-1 p-6 overflow-y-auto space-y-4"
+            >
+              <div className="text-xs text-neutral-500 pb-2 border-b border-white/5 flex items-center justify-between">
+                <span>Antigravity Interactive ZSH [Version 5.9.0-yk-darwin]</span>
+                <span>Type &apos;help&apos; for instruction list</span>
+              </div>
+
+              {outputs.map((item, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className={themeColors[themeMode]}>yathin@sg-prod:~$</span>
+                    <span className="text-white font-medium">{item.command}</span>
+                  </div>
+                  <div className="pl-4 border-l border-white/10">{item.output}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Modal Live Input Prompt */}
+            <div className="p-4 bg-white/[0.02] border-t border-white/10">
+              <form onSubmit={handleSubmit} className="flex items-center gap-2 text-xs">
+                <span className={themeColors[themeMode]}>yathin@sg-prod:~$</span>
+                <input
+                  ref={modalInputRef}
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="type a command... (e.g. whoami, achievements, exp)"
+                  className="flex-1 bg-transparent border-none outline-none text-white font-mono text-xs focus:ring-0 placeholder:text-neutral-600"
+                  autoComplete="off"
+                  spellCheck="false"
+                />
+                <button
+                  type="submit"
+                  className="text-neutral-500 hover:text-white transition-colors"
+                  title="Execute"
+                >
+                  <CornerDownLeft className="w-3.5 h-3.5" />
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
-      </div>
-    </section>
-  )
-}
+        </div>,
+        document.body
+      )
+    }

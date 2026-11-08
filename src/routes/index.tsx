@@ -38,11 +38,11 @@ function HomePage() {
         <AchievementsSection />
         <ExperienceSection />
         <WorkSection />
-        <InteractiveTerminal />
         <StackSection />
         <ContactSection />
       </main>
 
+      <InteractiveTerminal />
       <Footer />
     </div>
   )

@@ -33,11 +33,11 @@ export function Navbar() {
   }, [])
 
   const navLinks = [
+    { label: 'Terminal', href: '#terminal' },
     { label: 'About', href: '#about' },
     { label: 'Achievements', href: '#achievements' },
     { label: 'Experience', href: '#experience' },
     { label: 'Architecture', href: '#work' },
-    { label: 'Terminal', href: '#terminal' },
     { label: 'Stack', href: '#stack' },
   ]
 
@@ -69,6 +69,12 @@ export function Navbar() {
             <a
               key={link.label}
               href={link.href}
+              onClick={(e) => {
+                if (link.href === '#terminal') {
+                  e.preventDefault()
+                  window.dispatchEvent(new CustomEvent('open-terminal-modal'))
+                }
+              }}
               className="text-xs font-mono uppercase tracking-wider text-neutral-400 hover:text-white px-3 py-1.5 rounded-full transition-colors hover:bg-white/5"
             >
               {link.label}
@@ -116,7 +122,13 @@ export function Navbar() {
             <a
               key={link.label}
               href={link.href}
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={(e) => {
+                setMobileMenuOpen(false)
+                if (link.href === '#terminal') {
+                  e.preventDefault()
+                  window.dispatchEvent(new CustomEvent('open-terminal-modal'))
+                }
+              }}
               className="block font-mono text-sm text-neutral-300 hover:text-[#e6c79c] py-1.5 border-b border-white/5"
             >
               {link.label}

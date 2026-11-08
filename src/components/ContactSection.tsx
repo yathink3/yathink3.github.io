@@ -36,7 +36,7 @@ export function ContactSection() {
         {/* Section Label */}
         <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-[#e6c79c] mb-6">
           <span className="w-8 h-[1px] bg-[#e6c79c]" />
-          <span>07 — Let&apos;s Connect</span>
+          <span>06 — Let&apos;s Connect</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">

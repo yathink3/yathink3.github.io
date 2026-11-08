@@ -67,7 +67,7 @@ export function StackSection() {
         {/* Section Label */}
         <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-[#e6c79c] mb-6">
           <span className="w-8 h-[1px] bg-[#e6c79c]" />
-          <span>06 — Tech Stack &amp; Toolbox</span>
+          <span>05 — Tech Stack &amp; Toolbox</span>
         </div>
 
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
