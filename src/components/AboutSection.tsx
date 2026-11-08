@@ -51,7 +51,7 @@ export function AboutSection() {
               <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden border border-white/10 group shadow-[0_20px_50px_rgba(0,0,0,0.8)] bg-neutral-900">
                 {/* Photo */}
                 <img
-                  src="/yathin.png"
+                  src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/yathin.png`}
                   alt="Yathin K — Staff Engineer"
                   className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700 contrast-105"
                 />
