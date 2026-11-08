@@ -23,12 +23,13 @@ export function InteractiveTerminal() {
         <div className="space-y-1 font-mono text-xs">
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
             <pre className="sm:col-span-4 text-[#e6c79c] leading-tight select-none">
-{`    ___   __  ___  __
-   /   | / / /   |/ /
-  / /| |/ / / /| ' / 
- / ___ / /_/ ___  /  
-/_/  |_\\___/_/  |_/   
-                      
+{`██╗   ██╗ ██╗  ██╗
+╚██╗ ██╔╝ ██║ ██╔╝
+ ╚████╔╝  █████╔╝
+  ╚██╔╝   ██╔═██╗
+   ██║    ██║  ██╗██╗
+   ╚═╝    ╚═╝  ╚═╝╚═╝
+
   YK - STAFF ENGINEER`}
             </pre>
             <div className="sm:col-span-8 space-y-1 text-neutral-300">
@@ -218,11 +219,11 @@ LinkedIn: https://linkedin.com/in/yathink3/ | GitHub: https://github.com/yathink
 ======================================================================
 
 SUMMARY:
-Highly accomplished Staff Engineer and Front-End Architect with over 6+ 
-years of specialized experience designing, optimizing, and scaling enterprise 
-web applications, AI automation tools, and high-performance developer tooling. 
-Deep expertise across React, Next.js, Vite, and Tailwind CSS. Proven track 
-record leading Vite 8 and Tailwind CSS v4 migrations and authoring custom npm 
+Highly accomplished Staff Engineer and Front-End Architect with over 6+
+years of specialized experience designing, optimizing, and scaling enterprise
+web applications, AI automation tools, and high-performance developer tooling.
+Deep expertise across React, Next.js, Vite, and Tailwind CSS. Proven track
+record leading Vite 8 and Tailwind CSS v4 migrations and authoring custom npm
 libraries. Actively expanding systems engineering capabilities via Rust and Bun.
 
 KEY ACHIEVEMENTS:
@@ -468,4 +469,3 @@ Highly accomplished Staff Engineer and Front-End Architect with over 6+ years of
     </section>
   )
 }
-
