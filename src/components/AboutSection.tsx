@@ -1,5 +1,5 @@
 import React from 'react'
-import { Sparkles, Terminal, Code2, Users, Rocket, Gauge } from 'lucide-react'
+import { Sparkles, Terminal, Code2, Users, Rocket, Gauge, BadgeCheck } from 'lucide-react'
 
 export function AboutSection() {
   const stats = [
@@ -44,53 +44,64 @@ export function AboutSection() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Portrait Container */}
-          <div className="lg:col-span-5 relative flex justify-center lg:justify-start">
-            <div className="relative w-72 sm:w-80 aspect-[4/5] rounded-2xl overflow-hidden border border-white/10 group shadow-[0_20px_50px_rgba(0,0,0,0.8)] bg-neutral-900">
-              {/* Photo */}
-              <img
-                src="/yathin.png"
-                alt="Yathin K — Staff Engineer"
-                className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700 contrast-105"
-              />
+          <div className="lg:col-span-5 flex justify-center lg:justify-start">
+            {/* Image Wrapper (Badge is anchored directly to the image) */}
+            <div className="relative w-72 sm:w-80">
+              {/* Photo Frame */}
+              <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden border border-white/10 group shadow-[0_20px_50px_rgba(0,0,0,0.8)] bg-neutral-900">
+                {/* Photo */}
+                <img
+                  src="/yathin.png"
+                  alt="Yathin K — Staff Engineer"
+                  className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700 contrast-105"
+                />
 
-              {/* Laser Scanline */}
-              <div className="portrait-scanline" />
+                {/* Laser Scanline */}
+                <div className="portrait-scanline" />
 
-              {/* Subtle gradient vignette */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                {/* Subtle gradient vignette */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
 
-              {/* Status Chips */}
-              <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 border border-white/10 backdrop-blur-md text-[11px] font-mono text-white">
-                  <span className="pulse-dot" />
-                  <span>X0PA AI</span>
-                </span>
-                <span className="px-2.5 py-1 rounded-full bg-black/70 border border-white/10 backdrop-blur-md text-[11px] font-mono text-neutral-400">
-                  📍 Singapore / IN
-                </span>
+                {/* Status Chips */}
+                <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 border border-white/10 backdrop-blur-md text-[11px] font-mono text-white">
+                    <span className="pulse-dot" />
+                    <span>X0PA AI</span>
+                  </span>
+                  <span className="px-2.5 py-1 rounded-full bg-black/70 border border-white/10 backdrop-blur-md text-[11px] font-mono text-neutral-400">
+                    📍 Singapore / IN
+                  </span>
+                </div>
+
+                <div className="absolute bottom-4 left-4 right-4 z-10">
+                  <div className="font-mono text-xs text-white font-medium">Yathin K</div>
+                  <div className="text-[11px] font-mono text-[#e6c79c]">Staff Engineer &amp; Frontend Architect</div>
+                </div>
               </div>
 
-              <div className="absolute bottom-4 left-4 right-4 z-10">
-                <div className="font-mono text-xs text-white font-medium">Yathin K</div>
-                <div className="text-[11px] font-mono text-[#e6c79c]">Staff Engineer &amp; Frontend Architect</div>
-              </div>
-            </div>
+              {/* Rotating circular badge with Seal Icon in the middle (partially inside the image, partially outside) */}
+              <div className="absolute bottom-10 -right-8 w-36 h-36 flex items-center justify-center pointer-events-none z-20">
+                <svg className="w-full h-full badge-rotate" viewBox="0 0 200 200">
+                  <defs>
+                    <path
+                      id="badgeCircle"
+                      d="M 100, 100 m -70, 0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0"
+                    />
+                  </defs>
+                  <text className="font-mono text-[11px] fill-[#e6c79c] uppercase tracking-[0.2em] font-semibold">
+                    <textPath href="#badgeCircle">
+                      • YATHIN K • STAFF ENGINEER • FRONTEND ARCHITECT
+                    </textPath>
+                  </text>
+                </svg>
 
-            {/* Rotating circular badge */}
-            <div className="hidden sm:block absolute -bottom-8 -right-4 w-32 h-32 pointer-events-none z-20">
-              <svg className="w-full h-full badge-rotate" viewBox="0 0 200 200">
-                <defs>
-                  <path
-                    id="badgeCircle"
-                    d="M 100, 100 m -75, 0 a 75,75 0 1,1 150,0 a 75,75 0 1,1 -150,0"
-                  />
-                </defs>
-                <text className="font-mono text-[11px] fill-[#e6c79c] uppercase tracking-widest font-bold">
-                  <textPath href="#badgeCircle">
-                    • YATHIN K • STAFF ENGINEER • FRONTEND ARCHITECT
-                  </textPath>
-                </text>
-              </svg>
+                {/* Seal Icon in the middle */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-10 h-10 rounded-full bg-black/50 border border-[#e6c79c]/30 backdrop-blur-sm flex items-center justify-center shadow-[0_0_15px_rgba(230,199,156,0.2)]">
+                    <BadgeCheck className="w-6 h-6 text-[#e6c79c] drop-shadow-[0_0_8px_rgba(230,199,156,0.5)]" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
