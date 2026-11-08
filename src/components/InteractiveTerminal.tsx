@@ -17,6 +17,7 @@ export function InteractiveTerminal() {
   const [mounted, setMounted] = useState(false)
   const terminalBodyRef = useRef<HTMLDivElement | null>(null)
   const modalBodyRef = useRef<HTMLDivElement | null>(null)
+  const modalRef = useRef<HTMLDivElement | null>(null)
   const isInitialMount = useRef(true)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const modalInputRef = useRef<HTMLInputElement | null>(null)
@@ -46,6 +47,64 @@ export function InteractiveTerminal() {
       document.body.classList.remove('terminal-modal-active')
       window.removeEventListener('keydown', handleKeyDown)
       clearTimeout(timer)
+    }
+  }, [isModalOpen])
+
+  // Entire terminal modal floating & 3D tilt movement based on mouse position
+  useEffect(() => {
+    if (!isModalOpen) return
+
+    let rafId: number | null = null
+    let targetX = 0
+    let targetY = 0
+    let currentX = 0
+    let currentY = 0
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Effect only happens when moving outside the terminal in the backdrop
+      const isInsideTerminal = modalRef.current?.contains(e.target as Node)
+      if (isInsideTerminal) {
+        targetX = 0
+        targetY = 0
+        return
+      }
+
+      const cx = window.innerWidth / 2
+      const cy = window.innerHeight / 2
+      targetX = (e.clientX - cx) / cx
+      targetY = (e.clientY - cy) / cy
+    }
+
+    const handleMouseLeave = () => {
+      targetX = 0
+      targetY = 0
+    }
+
+    const loop = () => {
+      // Fluid physics interpolation (lerp)
+      currentX += (targetX - currentX) * 0.08
+      currentY += (targetY - currentY) * 0.08
+
+      const transX = currentX * 28 // moves up to 28px horizontally
+      const transY = currentY * 20 // moves up to 20px vertically
+      const rotX = -currentY * 5.0 // tilts up to 5deg along X
+      const rotY = currentX * 6.0 // tilts up to 6deg along Y
+
+      if (modalRef.current) {
+        modalRef.current.style.transform = `perspective(1200px) translate3d(${transX.toFixed(2)}px, ${transY.toFixed(2)}px, 0px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`
+      }
+
+      rafId = requestAnimationFrame(loop)
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseleave', handleMouseLeave)
+    rafId = requestAnimationFrame(loop)
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseleave', handleMouseLeave)
+      if (rafId) cancelAnimationFrame(rafId)
     }
   }, [isModalOpen])
 
@@ -377,7 +436,12 @@ Highly accomplished Staff Engineer and Front-End Architect with over 6+ years of
       }}
     >
           <div
-            className="w-full max-w-5xl h-[84vh] flex flex-col rounded-2xl sm:rounded-3xl bg-[#090a0f]/95 border border-white/20 shadow-[0_25px_100px_rgba(0,0,0,0.85)] backdrop-blur-xl overflow-hidden font-mono relative"
+            ref={modalRef}
+            className="w-full max-w-5xl h-[84vh] flex flex-col rounded-2xl sm:rounded-3xl bg-[#090a0f]/95 border border-white/20 shadow-[0_25px_100px_rgba(0,0,0,0.85)] backdrop-blur-xl overflow-hidden font-mono relative will-change-transform"
+            style={{
+              transformStyle: 'preserve-3d',
+              transition: 'box-shadow 0.25s ease',
+            }}
             onClick={() => modalInputRef.current?.focus()}
           >
             {/* Modal Titlebar */}
