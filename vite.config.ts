@@ -5,7 +5,7 @@ import viteReact from '@vitejs/plugin-react'
 import { nitro } from 'nitro/vite'
 
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/yk-portfolio/' : '/',
+  base: '/',
   server: {
     port: 3000,
   },
